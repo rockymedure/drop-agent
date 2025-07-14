@@ -4,9 +4,10 @@ export const WebSearchResults = ({
   webSearchResults = [], 
   queries = [],
   onOpenDrawer,
+  isSearching = false,
   className = "" 
 }) => {
-  if (!webSearchResults || webSearchResults.length === 0) return null;
+  if (!queries || queries.length === 0) return null;
 
   const extractDomain = (url) => {
     try {
@@ -36,39 +37,70 @@ export const WebSearchResults = ({
     return acc + (result.content ? result.content.filter(item => item.type === 'web_search_result').length : 0);
   }, 0);
 
+  // Determine display state
+  const hasResults = webSearchResults && webSearchResults.length > 0;
+
   return (
     <div className={`max-w-2xl ${className}`}>
       <div 
         onClick={onOpenDrawer}
-        className="p-3 bg-green-50 rounded-lg border border-green-200 cursor-pointer hover:bg-green-100 transition-colors group"
+        className="p-3 bg-green-50 rounded-lg border border-green-200 cursor-pointer hover:bg-green-100 transition-colors group shadow-sm"
       >
         <div className="flex items-center justify-between">
           <div className="flex-1">
             <div className="flex items-center space-x-2 mb-2">
-              <span className="text-sm font-medium text-green-700">🌐 Web Search Complete</span>
-              <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">
-                {totalResults} results
+              <span className="text-sm font-medium text-green-700">
+                🌐 Web Search {isSearching ? '(searching...)' : 'Complete'}
               </span>
-            </div>
-            
-            {/* Quick preview of found domains */}
-            <div className="text-xs text-green-600 space-y-1">
-              {resultDomains.slice(0, 3).map((domain, index) => (
-                <div key={index} className="flex items-center">
-                  <span className="w-4 text-green-500 font-medium">{index + 1}.</span>
-                  <span className="truncate">{domain}</span>
-                </div>
-              ))}
-              {resultDomains.length > 3 && (
-                <div className="text-green-500 italic">
-                  +{resultDomains.length - 3} more sites...
-                </div>
+              {hasResults && (
+                <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">
+                  {totalResults} result{totalResults !== 1 ? 's' : ''} {isSearching ? 'so far' : ''}
+                </span>
               )}
             </div>
+            
+            {/* Quick preview of found domains or searching indicator */}
+            {isSearching ? (
+              <div className="text-xs text-green-600">
+                <div className="flex items-center">
+                  <span className="animate-pulse text-green-400 mr-2">●</span>
+                  <span>Searching web sources...</span>
+                </div>
+                {resultDomains.length > 0 && (
+                  <div className="space-y-1 mt-1">
+                    {resultDomains.slice(0, 3).map((domain, index) => (
+                      <div key={index} className="flex items-center">
+                        <span className="w-4 text-green-500 font-medium">{index + 1}.</span>
+                        <span className="truncate">{domain}</span>
+                        {index === resultDomains.length - 1 && (
+                          <span className="animate-pulse ml-2 text-green-400">●</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-xs text-green-600 space-y-1">
+                {resultDomains.slice(0, 3).map((domain, index) => (
+                  <div key={index} className="flex items-center">
+                    <span className="w-4 text-green-500 font-medium">{index + 1}.</span>
+                    <span className="truncate">{domain}</span>
+                  </div>
+                ))}
+                {resultDomains.length > 3 && (
+                  <div className="text-green-500 italic">
+                    +{resultDomains.length - 3} more sites...
+                  </div>
+                )}
+              </div>
+            )}
           </div>
           
           <div className="ml-3 flex items-center text-green-600 group-hover:text-green-700">
-            <span className="text-sm font-medium">View All Results</span>
+            <span className="text-sm font-medium">
+              {hasResults ? 'View All Results' : 'View Progress'}
+            </span>
             <span className="ml-1 transition-transform group-hover:translate-x-1">→</span>
           </div>
         </div>

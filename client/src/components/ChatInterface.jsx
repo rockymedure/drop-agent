@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useSSE } from '../hooks/useSSE';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { WebSearchResults } from './WebSearchResults';
-import { WebSearchProgress } from './WebSearchProgress';
 import { WebSearchDrawer } from './WebSearchDrawer';
 
 const ChatInterface = () => {
@@ -11,17 +10,64 @@ const ChatInterface = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentMessage, setCurrentMessage] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [drawerData, setDrawerData] = useState({ results: [], queries: [] });
   
   const { sendMessage } = useSSE();
 
-  const openDrawer = (results, queries) => {
-    setDrawerData({ results, queries });
+  const openDrawer = () => {
     setIsDrawerOpen(true);
   };
 
   const closeDrawer = () => {
     setIsDrawerOpen(false);
+  };
+
+  // Helper functions for nav bar web search icon
+  const hasWebSearchResults = () => {
+    // Check current message
+    if (currentMessage && currentMessage.webSearchQueries && currentMessage.webSearchQueries.length > 0) {
+      return true;
+    }
+    // Check recent messages for web search results
+    for (let i = messages.length - 1; i >= 0; i--) {
+      const message = messages[i];
+      if (message.webSearchQueries && message.webSearchQueries.length > 0) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const getLatestWebSearchResults = () => {
+    if (currentMessage && currentMessage.webSearchResults) {
+      return currentMessage.webSearchResults;
+    }
+    for (let i = messages.length - 1; i >= 0; i--) {
+      const message = messages[i];
+      if (message.webSearchResults && message.webSearchResults.length > 0) {
+        return message.webSearchResults;
+      }
+    }
+    return [];
+  };
+
+  const getLatestWebSearchQueries = () => {
+    if (currentMessage && currentMessage.webSearchQueries) {
+      return currentMessage.webSearchQueries;
+    }
+    for (let i = messages.length - 1; i >= 0; i--) {
+      const message = messages[i];
+      if (message.webSearchQueries && message.webSearchQueries.length > 0) {
+        return message.webSearchQueries;
+      }
+    }
+    return [];
+  };
+
+  const getWebSearchResultCount = () => {
+    const results = getLatestWebSearchResults();
+    return results.reduce((acc, result) => {
+      return acc + (result.content ? result.content.filter(item => item.type === 'web_search_result').length : 0);
+    }, 0);
   };
 
   const handleSend = async () => {
@@ -125,8 +171,24 @@ const ChatInterface = () => {
   return (
     <div className="flex flex-col h-screen bg-white">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200">
+      <div className="p-4 border-b border-gray-200 flex items-center justify-between">
         <h1 className="text-xl font-semibold">Drop Agent</h1>
+        
+        {/* Web Search Icon */}
+        {(hasWebSearchResults()) && (
+          <button
+            onClick={openDrawer}
+            className="flex items-center space-x-2 px-3 py-2 bg-green-50 hover:bg-green-100 border border-green-200 rounded-lg transition-colors group"
+          >
+            <span className="text-green-600">🌐</span>
+            <span className="text-sm text-green-700 font-medium">
+              {getWebSearchResultCount()} results
+            </span>
+            {currentMessage && isProcessing && (
+              <span className="animate-pulse text-green-400 text-xs">●</span>
+            )}
+          </button>
+        )}
       </div>
 
       {/* Messages */}
@@ -181,15 +243,13 @@ const ChatInterface = () => {
                   </div>
                 )}
                 
-                {/* Web search progress and results */}
+                {/* Web search results */}
                 {message.webSearchQueries && message.webSearchQueries.length > 0 && (
-                  <WebSearchProgress queries={message.webSearchQueries} />
-                )}
-                {message.webSearchResults && message.webSearchResults.length > 0 && (
                   <WebSearchResults 
                     webSearchResults={message.webSearchResults}
                     queries={message.webSearchQueries || []}
-                    onOpenDrawer={() => openDrawer(message.webSearchResults, message.webSearchQueries || [])}
+                    onOpenDrawer={openDrawer}
+                    isSearching={false}
                   />
                 )}
                 
@@ -244,18 +304,13 @@ const ChatInterface = () => {
               </div>
             )}
             
-            {/* Web search progress and results */}
+            {/* Web search results */}
             {currentMessage.webSearchQueries && currentMessage.webSearchQueries.length > 0 && (
-              <WebSearchProgress 
-                queries={currentMessage.webSearchQueries} 
-                isActive={isProcessing && currentMessage.webSearchQueries.length > 0}
-              />
-            )}
-            {currentMessage.webSearchResults && currentMessage.webSearchResults.length > 0 && (
               <WebSearchResults 
                 webSearchResults={currentMessage.webSearchResults}
                 queries={currentMessage.webSearchQueries || []}
-                onOpenDrawer={() => openDrawer(currentMessage.webSearchResults, currentMessage.webSearchQueries || [])}
+                onOpenDrawer={openDrawer}
+                isSearching={isProcessing && currentMessage.webSearchQueries.length > 0}
               />
             )}
             
@@ -304,8 +359,9 @@ const ChatInterface = () => {
       <WebSearchDrawer 
         isOpen={isDrawerOpen}
         onClose={closeDrawer}
-        webSearchResults={drawerData.results}
-        queries={drawerData.queries}
+        webSearchResults={getLatestWebSearchResults()}
+        queries={getLatestWebSearchQueries()}
+        isSearching={isProcessing && hasWebSearchResults()}
       />
     </div>
   );
