@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useSSE } from '../hooks/useSSE';
+import { MarkdownRenderer } from './MarkdownRenderer';
 
 const ChatInterface = () => {
   const [messages, setMessages] = useState([]);
@@ -128,7 +129,9 @@ const ChatInterface = () => {
                 {message.content && (
                   <div className="max-w-2xl p-4 rounded-lg bg-gray-100 text-gray-800">
                     <div className="text-sm font-medium mb-2">Assistant</div>
-                    <div className="whitespace-pre-wrap">{message.content}</div>
+                    <div className="markdown-content">
+                      <MarkdownRenderer content={message.content} />
+                    </div>
                   </div>
                 )}
               </div>
@@ -168,9 +171,9 @@ const ChatInterface = () => {
                 <div className="text-sm font-medium mb-2">
                   Assistant {isProcessing && <span className="text-blue-500">(responding...)</span>}
                 </div>
-                <div className="whitespace-pre-wrap">
-                  {currentMessage.content}
-                  {isProcessing && <span className="animate-pulse">|</span>}
+                <div className="markdown-content">
+                  <MarkdownRenderer content={currentMessage.content} />
+                  {isProcessing && <span className="animate-pulse ml-1">|</span>}
                 </div>
               </div>
             )}
