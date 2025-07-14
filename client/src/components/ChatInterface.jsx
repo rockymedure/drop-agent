@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useSSE } from '../hooks/useSSE';
 import { MarkdownRenderer } from './MarkdownRenderer';
+import { WebSearchResults } from './WebSearchResults';
+import { WebSearchProgress } from './WebSearchProgress';
 
 const ChatInterface = () => {
   const [messages, setMessages] = useState([]);
@@ -28,12 +30,14 @@ const ChatInterface = () => {
         role: 'assistant',
         content: '',
         thinking: '',
-        toolResults: []
+        toolResults: [],
+        webSearchResults: [],
+        webSearchQueries: []
       });
       
       try {
         await sendMessage(inputValue, {
-          model: 'claude-opus-4-20250514',
+          model: 'claude-sonnet-4-20250514',
           maxTokens: 16000,
           thinkingBudget: 10000
         }, (data) => {
@@ -47,8 +51,20 @@ const ChatInterface = () => {
             setIsProcessing(false);
           } else if (data.error) {
             console.error('Stream error:', data.error);
+            const errorMessage = data.error?.message || 'Unknown error';
+            
+            if (errorMessage.includes('overloaded') || errorMessage.includes('Overloaded')) {
+              setCurrentMessage(prev => prev ? {
+                ...prev,
+                content: '⚠️ **Service Temporarily Overloaded**\n\nThe AI service is experiencing high traffic. Please try again in a few seconds.\n\n*This is a temporary issue and should resolve shortly.*'
+              } : null);
+            } else {
+              setCurrentMessage(prev => prev ? {
+                ...prev,
+                content: `❌ **Error**: ${errorMessage}\n\nPlease try again.`
+              } : null);
+            }
             setIsProcessing(false);
-            setCurrentMessage(null);
           } else {
             // Handle streaming events
             if (data.type === 'thinking_delta') {
@@ -65,6 +81,16 @@ const ChatInterface = () => {
               setCurrentMessage(prev => prev ? {
                 ...prev,
                 toolResults: [...prev.toolResults, data]
+              } : null);
+            } else if (data.type === 'web_search_result') {
+              setCurrentMessage(prev => prev ? {
+                ...prev,
+                webSearchResults: [...prev.webSearchResults, data]
+              } : null);
+            } else if (data.type === 'web_search_query') {
+              setCurrentMessage(prev => prev ? {
+                ...prev,
+                webSearchQueries: [...prev.webSearchQueries, data.query]
               } : null);
             }
           }
@@ -116,13 +142,32 @@ const ChatInterface = () => {
                 {/* Tool results section */}
                 {message.toolResults && message.toolResults.length > 0 && (
                   <div className="space-y-2">
-                    {message.toolResults.map((tool, index) => (
-                      <div key={index} className="max-w-2xl p-3 bg-blue-50 rounded-lg border border-blue-200">
-                        <div className="text-sm font-medium text-blue-700">🔧 Used {tool.tool}</div>
-                        <div className="text-sm text-blue-600 mt-1">{tool.result}</div>
-                      </div>
-                    ))}
+                    {message.toolResults.map((tool, index) => {
+                      const isWebSearch = tool.tool === 'web_search';
+                      const bgColor = isWebSearch ? 'bg-green-50' : 'bg-blue-50';
+                      const borderColor = isWebSearch ? 'border-green-200' : 'border-blue-200';
+                      const textColor = isWebSearch ? 'text-green-700' : 'text-blue-700';
+                      const resultColor = isWebSearch ? 'text-green-600' : 'text-blue-600';
+                      const icon = isWebSearch ? '🌐' : '🔧';
+                      
+                      return (
+                        <div key={index} className={`max-w-2xl p-3 ${bgColor} rounded-lg border ${borderColor}`}>
+                          <div className={`text-sm font-medium ${textColor}`}>
+                            {icon} {isWebSearch ? 'Web Search' : `Used ${tool.tool}`}
+                          </div>
+                          <div className={`text-sm ${resultColor} mt-1`}>{tool.result}</div>
+                        </div>
+                      );
+                    })}
                   </div>
+                )}
+                
+                {/* Web search progress and results */}
+                {message.webSearchQueries && message.webSearchQueries.length > 0 && (
+                  <WebSearchProgress queries={message.webSearchQueries} />
+                )}
+                {message.webSearchResults && message.webSearchResults.length > 0 && (
+                  <WebSearchResults webSearchResults={message.webSearchResults} />
                 )}
                 
                 {/* Main response section */}
@@ -156,13 +201,35 @@ const ChatInterface = () => {
             {/* Tool results section */}
             {currentMessage.toolResults && currentMessage.toolResults.length > 0 && (
               <div className="space-y-2">
-                {currentMessage.toolResults.map((tool, index) => (
-                  <div key={index} className="max-w-2xl p-3 bg-blue-50 rounded-lg border border-blue-200">
-                    <div className="text-sm font-medium text-blue-700">🔧 Used {tool.tool}</div>
-                    <div className="text-sm text-blue-600 mt-1">{tool.result}</div>
-                  </div>
-                ))}
+                {currentMessage.toolResults.map((tool, index) => {
+                  const isWebSearch = tool.tool === 'web_search';
+                  const bgColor = isWebSearch ? 'bg-green-50' : 'bg-blue-50';
+                  const borderColor = isWebSearch ? 'border-green-200' : 'border-blue-200';
+                  const textColor = isWebSearch ? 'text-green-700' : 'text-blue-700';
+                  const resultColor = isWebSearch ? 'text-green-600' : 'text-blue-600';
+                  const icon = isWebSearch ? '🌐' : '🔧';
+                  
+                  return (
+                    <div key={index} className={`max-w-2xl p-3 ${bgColor} rounded-lg border ${borderColor}`}>
+                      <div className={`text-sm font-medium ${textColor}`}>
+                        {icon} {isWebSearch ? 'Web Search' : `Used ${tool.tool}`}
+                      </div>
+                      <div className={`text-sm ${resultColor} mt-1`}>{tool.result}</div>
+                    </div>
+                  );
+                })}
               </div>
+            )}
+            
+            {/* Web search progress and results */}
+            {currentMessage.webSearchQueries && currentMessage.webSearchQueries.length > 0 && (
+              <WebSearchProgress 
+                queries={currentMessage.webSearchQueries} 
+                isActive={isProcessing && currentMessage.webSearchQueries.length > 0}
+              />
+            )}
+            {currentMessage.webSearchResults && currentMessage.webSearchResults.length > 0 && (
+              <WebSearchResults webSearchResults={currentMessage.webSearchResults} />
             )}
             
             {/* Main response section */}
