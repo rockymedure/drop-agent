@@ -2,6 +2,8 @@
 
 A modern browser-based chat interface for an AI reasoning agent with extended thinking capabilities, inspired by Claude Desktop.
 
+> **🚀 Want to use this agent in your own project?** See the [Integration Guide](README-integration.md) for drop-in instructions!
+
 ## Features
 
 - **🧠 Extended Thinking**: Real-time visibility into AI reasoning process
@@ -166,6 +168,31 @@ npm run cli
 ```
 
 This provides the same functionality in a command-line format for development and testing.
+
+## Using This Agent in Your Project
+
+This reasoning agent is now modular and ready for integration into any project:
+
+### **📦 Available Packages**
+- **`packages/reasoning-agent/`** - Core agent functionality
+- **`packages/reasoning-agent-ui/`** - React chat components
+- **`examples/`** - Integration examples
+
+### **🚀 Quick Integration**
+```javascript
+// 3-line server setup
+const agent = new ReasoningAgent({ apiKey: process.env.ANTHROPIC_API_KEY });
+addCommonTools(agent);
+setupSSERoutes(app, agent);
+```
+
+```jsx
+// 2-line React integration  
+import { ChatInterface } from '@reasoning-agent/ui';
+<ChatInterface serverUrl="http://localhost:3001" />
+```
+
+**→ Full instructions: [Integration Guide](README-integration.md)**
 
 ## Contributing
 
