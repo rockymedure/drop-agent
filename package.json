@@ -1,0 +1,42 @@
+{
+  "name": "reasoning-agent-workspace",
+  "version": "1.0.0",
+  "description": "A modern browser-based chat interface for an AI reasoning agent with extended thinking capabilities, inspired by Claude Desktop",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "install-all": "cd server && npm install && cd ../client && npm install && cd ..",
+    "dev": "concurrently \"cd server && node sse-server.js\" \"cd client && npm run dev\"",
+    "start": "concurrently \"cd server && npm start\" \"cd client && npm start\"",
+    "build": "cd client && npm run build",
+    "server": "cd server && node sse-server.js",
+    "client": "cd client && npm run dev",
+    "cli": "cd server && npm run cli",
+    "simple": "./run.sh"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "keywords": [
+    "ai",
+    "reasoning",
+    "agent",
+    "anthropic",
+    "claude",
+    "extended-thinking",
+    "chat",
+    "browser",
+    "sse",
+    "streaming"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}
