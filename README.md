@@ -66,8 +66,11 @@ npm run install-all # Install all dependencies
 
 - **Calculator** - Mathematical operations (`"What's 25 × 17?"`)
 - **Weather** - Weather information (`"What's the weather in Tokyo?"`)
+- **Web Search** - Real-time web search with citations (`"What's the latest news about AI?"`) *
 - **Time** - Current date/time (`"What time is it?"`)
 - **Extensible** - Easy to add more tools
+
+*\* Web search requires organization admin to enable in [Anthropic Console](https://console.anthropic.com/settings/privacy)*
 
 ## 🎨 **Key Features**
 
@@ -128,6 +131,7 @@ If you're an AI helping someone set up Drop Agent:
 4. **Test Messages**: Suggest trying:
    - `"What's 142 × 67?"`
    - `"What's the weather in London?"`
+   - `"What's the latest news about AI breakthroughs?"`
    - `"Help me think through buying a house"`
 
 The setup is designed to work out-of-the-box with minimal configuration.

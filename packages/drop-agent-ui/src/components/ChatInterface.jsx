@@ -3,6 +3,8 @@ import { useSSE } from '../hooks/useSSE.js';
 import { ThinkingBlock } from './ThinkingBlock.jsx';
 import { ResponseBlock } from './ResponseBlock.jsx';
 import { ToolResults } from './ToolResults.jsx';
+import { WebSearchResults } from './WebSearchResults.jsx';
+import { WebSearchProgress } from './WebSearchProgress.jsx';
 import { UserMessage } from './UserMessage.jsx';
 import { ChatInput } from './ChatInput.jsx';
 
@@ -11,7 +13,7 @@ export const ChatInterface = ({
   title = "Reasoning Agent",
   className = "",
   modelOptions = {
-    model: 'claude-opus-4-20250514',
+    model: 'claude-sonnet-4-20250514',
     maxTokens: 16000,
     thinkingBudget: 10000
   }
@@ -39,7 +41,9 @@ export const ChatInterface = ({
         role: 'assistant',
         content: '',
         thinking: '',
-        toolResults: []
+        toolResults: [],
+        webSearchResults: [],
+        webSearchQueries: []
       });
       
       try {
@@ -54,8 +58,20 @@ export const ChatInterface = ({
             setIsProcessing(false);
           } else if (data.error) {
             console.error('Stream error:', data.error);
+            const errorMessage = data.error?.message || 'Unknown error';
+            
+            if (errorMessage.includes('overloaded') || errorMessage.includes('Overloaded')) {
+              setCurrentMessage(prev => prev ? {
+                ...prev,
+                content: '⚠️ **Service Temporarily Overloaded**\n\nThe AI service is experiencing high traffic. Please try again in a few seconds.\n\n*This is a temporary issue and should resolve shortly.*'
+              } : null);
+            } else {
+              setCurrentMessage(prev => prev ? {
+                ...prev,
+                content: `❌ **Error**: ${errorMessage}\n\nPlease try again.`
+              } : null);
+            }
             setIsProcessing(false);
-            setCurrentMessage(null);
           } else {
             // Handle streaming events
             if (data.type === 'thinking_delta') {
@@ -72,6 +88,16 @@ export const ChatInterface = ({
               setCurrentMessage(prev => prev ? {
                 ...prev,
                 toolResults: [...prev.toolResults, data]
+              } : null);
+            } else if (data.type === 'web_search_result') {
+              setCurrentMessage(prev => prev ? {
+                ...prev,
+                webSearchResults: [...prev.webSearchResults, data]
+              } : null);
+            } else if (data.type === 'web_search_query') {
+              setCurrentMessage(prev => prev ? {
+                ...prev,
+                webSearchQueries: [...prev.webSearchQueries, data.query]
               } : null);
             }
           }
@@ -111,6 +137,8 @@ export const ChatInterface = ({
               <div className="space-y-3">
                 <ThinkingBlock thinking={message.thinking} />
                 <ToolResults toolResults={message.toolResults} />
+                <WebSearchProgress queries={message.webSearchQueries} />
+                <WebSearchResults webSearchResults={message.webSearchResults} />
                 <ResponseBlock content={message.content} />
               </div>
             )}
@@ -125,6 +153,11 @@ export const ChatInterface = ({
               isStreaming={isProcessing} 
             />
             <ToolResults toolResults={currentMessage.toolResults} />
+            <WebSearchProgress 
+              queries={currentMessage.webSearchQueries} 
+              isActive={isProcessing && currentMessage.webSearchQueries.length > 0}
+            />
+            <WebSearchResults webSearchResults={currentMessage.webSearchResults} />
             <ResponseBlock 
               content={currentMessage.content} 
               isStreaming={isProcessing} 

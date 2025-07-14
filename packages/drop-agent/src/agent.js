@@ -49,6 +49,19 @@ Remember: You're not just answering questions - you're helping users think bette
     });
   }
 
+  addWebSearch(config = {}) {
+    // Add web search as a native Anthropic tool
+    this.webSearchConfig = {
+      type: "web_search_20250305",
+      name: "web_search",
+      max_uses: config.maxUses || 5,
+      ...(config.allowedDomains && { allowed_domains: config.allowedDomains }),
+      ...(config.blockedDomains && { blocked_domains: config.blockedDomains }),
+      ...(config.userLocation && { user_location: config.userLocation })
+    };
+    return this;
+  }
+
   removeTool(name) {
     return this.tools.delete(name);
   }
@@ -74,12 +87,18 @@ Remember: You're not just answering questions - you're helping users think bette
       input_schema: tool.input_schema
     }));
 
+    // Add web search tool if configured
+    const tools = [...toolDefinitions];
+    if (this.webSearchConfig) {
+      tools.push(this.webSearchConfig);
+    }
+
     let stream = this.client.messages.stream({
-      model: options.model || "claude-opus-4-20250514",
+      model: options.model || "claude-sonnet-4-20250514",
       max_tokens: options.maxTokens || 16000,
       messages,
       system: this.systemPrompt,
-      tools: toolDefinitions.length > 0 ? toolDefinitions : undefined,
+      tools: tools.length > 0 ? tools : undefined,
       thinking: {
         type: "enabled",
         budget_tokens: options.thinkingBudget || 10000
@@ -106,6 +125,26 @@ Remember: You're not just answering questions - you're helping users think bette
             id: event.content_block.id,
             name: event.content_block.name,
             input: ''
+          };
+        } else if (event.content_block.type === 'server_tool_use') {
+          // Handle web search tool use
+          currentToolCall = {
+            id: event.content_block.id,
+            name: event.content_block.name,
+            input: '',
+            isWebSearch: true
+          };
+          yield {
+            type: 'web_search_start',
+            tool: event.content_block.name,
+            id: event.content_block.id
+          };
+        } else if (event.content_block.type === 'web_search_tool_result') {
+          // Handle web search results
+          yield {
+            type: 'web_search_result',
+            tool_use_id: event.content_block.tool_use_id,
+            content: event.content_block.content
           };
         }
       } else if (event.type === 'content_block_delta') {
@@ -140,7 +179,16 @@ Remember: You're not just answering questions - you're helping users think bette
         if (currentToolCall) {
           try {
             currentToolCall.input = JSON.parse(currentToolCall.input);
-            toolCalls.push(currentToolCall);
+            
+            if (currentToolCall.isWebSearch) {
+              // Emit web search query update
+              yield {
+                type: 'web_search_query',
+                query: currentToolCall.input.query || 'web content'
+              };
+            } else {
+              toolCalls.push(currentToolCall);
+            }
           } catch (e) {
             console.error('Failed to parse tool input:', e);
           }

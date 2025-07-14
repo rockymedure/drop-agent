@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import ReasoningAgent from './agent.js';
+import ReasoningAgent from '../packages/drop-agent/src/agent.js';
 
 // Load environment variables
 dotenv.config();
@@ -43,6 +43,14 @@ agent.addTool(
     return `Weather in ${location}: Sunny, 72°F (simulated response)`;
   }
 );
+
+// Add web search capability
+agent.addWebSearch({
+  maxUses: 5,
+  // Optional: Add domain filtering or location
+  // allowedDomains: ['wikipedia.org', 'github.com'],
+  // userLocation: { type: 'approximate', city: 'San Francisco', region: 'California', country: 'US' }
+});
 
 // SSE endpoint for streaming chat
 app.post('/api/chat/stream', async (req, res) => {

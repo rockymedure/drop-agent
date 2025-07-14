@@ -1,7 +1,8 @@
 import createCalculatorTool from './calculator.js';
 import createWeatherTool from './weather.js';
+import createWebSearchTool from './websearch.js';
 
-export { createCalculatorTool, createWeatherTool };
+export { createCalculatorTool, createWeatherTool, createWebSearchTool };
 
 // Helper function to add common tools to an agent
 export const addCommonTools = (agent, config = {}) => {
@@ -10,6 +11,11 @@ export const addCommonTools = (agent, config = {}) => {
   
   const weather = createWeatherTool(config.weather);
   agent.addTool(weather.name, weather.description, weather.parameters, weather.handler);
+  
+  // Add web search if configured
+  if (config.webSearch !== false) {
+    agent.addWebSearch(config.webSearch || {});
+  }
   
   return agent;
 };
@@ -24,6 +30,7 @@ export class ToolRegistry {
   registerDefaultTools() {
     this.register('calculator', createCalculatorTool);
     this.register('weather', createWeatherTool);
+    this.register('websearch', createWebSearchTool);
   }
 
   register(name, factory) {
@@ -49,4 +56,4 @@ export class ToolRegistry {
   }
 }
 
-export default { createCalculatorTool, createWeatherTool, addCommonTools, ToolRegistry };
+export default { createCalculatorTool, createWeatherTool, createWebSearchTool, addCommonTools, ToolRegistry };
