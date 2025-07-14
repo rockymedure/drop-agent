@@ -1,6 +1,6 @@
 {
   "name": "drop-agent",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Modular AI reasoning agent with extended thinking capabilities using Anthropic's Claude",
   "type": "module",
   "main": "index.js",

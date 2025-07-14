@@ -80,14 +80,14 @@ const ChatInterface = () => {
     <div className="flex flex-col h-screen bg-white">
       {/* Header */}
       <div className="p-4 border-b border-gray-200">
-        <h1 className="text-xl font-semibold">Reasoning Agent - Basic Test</h1>
+        <h1 className="text-xl font-semibold">Drop Agent</h1>
       </div>
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 && !currentMessage && (
           <div className="text-center text-gray-500">
-            Send a message to test the reasoning agent with extended thinking!
+            Send a message to start exploring ideas with Drop Agent!
           </div>
         )}
         
