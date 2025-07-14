@@ -1,7 +1,7 @@
 {
-  "name": "reasoning-agent-server",
+  "name": "drop-agent-server",
   "version": "1.0.0",
-  "description": "Backend server for the reasoning agent",
+  "description": "Backend server for Drop Agent",
   "main": "index.js",
   "type": "module",
   "scripts": {

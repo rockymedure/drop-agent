@@ -1,6 +1,6 @@
 {
   "name": "drop-agent",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Modular AI reasoning agent with extended thinking capabilities using Anthropic's Claude",
   "type": "module",
   "main": "index.js",
@@ -25,7 +25,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/rockymedure/drop-agent.git",
-    "directory": "packages/reasoning-agent"
+    "directory": "packages/drop-agent"
   },
   "homepage": "https://github.com/rockymedure/drop-agent#readme",
   "bugs": {

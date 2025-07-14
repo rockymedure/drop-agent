@@ -1,15 +1,15 @@
 {
-  "name": "reasoning-agent-simple-example",
+  "name": "drop-agent-simple-example",
   "version": "1.0.0",
-  "description": "Simple integration example for reasoning agent",
+  "description": "Simple integration example for Drop Agent",
   "type": "module",
   "scripts": {
     "dev": "node server.js",
     "start": "node server.js"
   },
   "dependencies": {
-    "drop-agent": "^1.0.0",
-    "drop-agent-ui": "^1.0.0",
+    "drop-agent": "^1.0.2",
+    "drop-agent-ui": "^1.0.2",
     "express": "^4.18.2",
     "dotenv": "^16.4.5",
     "react": "^18.2.0",

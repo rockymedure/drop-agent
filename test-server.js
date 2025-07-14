@@ -1,9 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import ReasoningAgent from './packages/reasoning-agent/src/agent.js';
-import { createCalculatorTool, createWeatherTool } from './packages/reasoning-agent/src/tools/index.js';
-import { createSSEHandler } from './packages/reasoning-agent/src/sse.js';
+import ReasoningAgent from './packages/drop-agent/src/agent.js';
+import { createCalculatorTool, createWeatherTool } from './packages/drop-agent/src/tools/index.js';
+import { createSSEHandler } from './packages/drop-agent/src/sse.js';
 
 dotenv.config();
 
@@ -39,7 +39,7 @@ app.get('/api/health', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Test SSE Reasoning Agent Server running on port ${PORT}`);
+  console.log(`🚀 Test SSE Drop Agent Server running on port ${PORT}`);
   console.log(`📡 Streaming API available at http://localhost:${PORT}/api/chat/stream`);
   console.log(`🔧 Available tools: ${agent.listTools().join(', ')}`);
 });

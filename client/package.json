@@ -1,7 +1,7 @@
 {
-  "name": "reasoning-agent-client",
+  "name": "drop-agent-client",
   "version": "1.0.0",
-  "description": "Frontend client for the reasoning agent",
+  "description": "Frontend client for Drop Agent",
   "private": true,
   "type": "module",
   "scripts": {
