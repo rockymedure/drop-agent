@@ -47,8 +47,8 @@ async function createDropAgentApp() {
         "build": "vite build"
       },
       "dependencies": {
-        "drop-agent": "^1.0.1",
-        "drop-agent-ui": "^1.0.1",
+        "drop-agent": "^1.0.2",
+        "drop-agent-ui": "^1.0.2",
         "express": "^4.18.2",
         "cors": "^2.8.5",
         "dotenv": "^16.4.5",

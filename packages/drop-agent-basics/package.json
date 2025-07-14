@@ -1,6 +1,6 @@
 {
   "name": "drop-agent-basics",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CLI tool to create Drop Agent projects with zero setup",
   "type": "module",
   "bin": {
@@ -10,7 +10,7 @@
   "main": "./bin/create-drop-agent.js",
   "keywords": [
     "ai",
-    "reasoning-agent",
+    "drop-agent",
     "drop-agent",
     "cli",
     "create-app",
