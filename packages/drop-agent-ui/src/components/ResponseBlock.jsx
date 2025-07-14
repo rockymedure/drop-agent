@@ -1,4 +1,5 @@
 import React from 'react';
+import { MarkdownRenderer } from './MarkdownRenderer.jsx';
 
 export const ResponseBlock = ({ 
   content, 
@@ -16,9 +17,9 @@ export const ResponseBlock = ({
           {title} {isStreaming && <span className="text-blue-500">(responding...)</span>}
         </div>
       )}
-      <div className="whitespace-pre-wrap">
-        {content}
-        {isStreaming && <span className="animate-pulse">|</span>}
+      <div className="markdown-content">
+        <MarkdownRenderer content={content} />
+        {isStreaming && <span className="animate-pulse ml-1">|</span>}
       </div>
     </div>
   );
