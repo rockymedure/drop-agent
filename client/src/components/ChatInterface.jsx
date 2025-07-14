@@ -20,7 +20,8 @@ const ChatInterface = () => {
         content: inputValue
       };
       
-      setMessages(prev => [...prev, userMessage]);
+      const updatedMessages = [...messages, userMessage];
+      setMessages(updatedMessages);
       setInputValue('');
       setIsProcessing(true);
       
@@ -35,8 +36,14 @@ const ChatInterface = () => {
         webSearchQueries: []
       });
       
+      // Build conversation history for Claude
+      const conversationHistory = updatedMessages.map(msg => ({
+        role: msg.role,
+        content: msg.content
+      }));
+      
       try {
-        await sendMessage(inputValue, {
+        await sendMessage(conversationHistory, {
           model: 'claude-sonnet-4-20250514',
           maxTokens: 16000,
           thinkingBudget: 10000
