@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { ReasoningAgent, setupSSERoutes, ToolRegistry } from '@reasoning-agent/core';
+import { ReasoningAgent, setupSSERoutes, ToolRegistry } from 'drop-agent';
 
 dotenv.config();
 

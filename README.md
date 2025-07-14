@@ -174,13 +174,18 @@ This provides the same functionality in a command-line format for development an
 This reasoning agent is now modular and ready for integration into any project:
 
 ### **📦 Available Packages**
-- **`packages/reasoning-agent/`** - Core agent functionality
-- **`packages/reasoning-agent-ui/`** - React chat components
+- **`drop-agent`** - Core agent functionality
+- **`drop-agent-ui`** - React chat components
 - **`examples/`** - Integration examples
 
 ### **🚀 Quick Integration**
+```bash
+npm install drop-agent drop-agent-ui
+```
+
 ```javascript
 // 3-line server setup
+import { ReasoningAgent, addCommonTools, setupSSERoutes } from 'drop-agent';
 const agent = new ReasoningAgent({ apiKey: process.env.ANTHROPIC_API_KEY });
 addCommonTools(agent);
 setupSSERoutes(app, agent);
@@ -188,7 +193,7 @@ setupSSERoutes(app, agent);
 
 ```jsx
 // 2-line React integration  
-import { ChatInterface } from '@reasoning-agent/ui';
+import { ChatInterface } from 'drop-agent-ui';
 <ChatInterface serverUrl="http://localhost:3001" />
 ```
 

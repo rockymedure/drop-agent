@@ -1,5 +1,5 @@
 {
-  "name": "@reasoning-agent/ui",
+  "name": "drop-agent-ui",
   "version": "1.0.0",
   "description": "React components for reasoning agent chat interfaces",
   "type": "module",
@@ -19,8 +19,17 @@
     "ui",
     "sse"
   ],
-  "author": "",
+  "author": "rockymedure",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rockymedure/drop-agent.git",
+    "directory": "packages/reasoning-agent-ui"
+  },
+  "homepage": "https://github.com/rockymedure/drop-agent#readme",
+  "bugs": {
+    "url": "https://github.com/rockymedure/drop-agent/issues"
+  },
   "peerDependencies": {
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0"

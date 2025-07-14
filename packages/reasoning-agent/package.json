@@ -1,5 +1,5 @@
 {
-  "name": "@reasoning-agent/core",
+  "name": "drop-agent",
   "version": "1.0.0",
   "description": "Modular AI reasoning agent with extended thinking capabilities using Anthropic's Claude",
   "type": "module",
@@ -20,8 +20,17 @@
     "tools",
     "modular"
   ],
-  "author": "",
+  "author": "rockymedure",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rockymedure/drop-agent.git",
+    "directory": "packages/reasoning-agent"
+  },
+  "homepage": "https://github.com/rockymedure/drop-agent#readme",
+  "bugs": {
+    "url": "https://github.com/rockymedure/drop-agent/issues"
+  },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.29.0",
     "dotenv": "^16.4.5"

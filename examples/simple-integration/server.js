@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { ReasoningAgent, addCommonTools, setupSSERoutes } from '@reasoning-agent/core';
+import { ReasoningAgent, addCommonTools, setupSSERoutes } from 'drop-agent';
 
 // Load environment variables
 dotenv.config();

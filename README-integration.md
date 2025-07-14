@@ -8,17 +8,17 @@ The reasoning agent is now modular and can be easily integrated into any project
 
 ```bash
 # Core agent functionality
-npm install @reasoning-agent/core
+npm install drop-agent
 
 # React UI components (optional)
-npm install @reasoning-agent/ui
+npm install drop-agent-ui
 ```
 
 ### 2. Basic Server Setup
 
 ```javascript
 import express from 'express';
-import { ReasoningAgent, addCommonTools, setupSSERoutes } from '@reasoning-agent/core';
+import { ReasoningAgent, addCommonTools, setupSSERoutes } from 'drop-agent';
 
 const app = express();
 const agent = new ReasoningAgent({
@@ -40,7 +40,7 @@ app.listen(3001, () => {
 
 ```jsx
 import React from 'react';
-import { ChatInterface } from '@reasoning-agent/ui';
+import { ChatInterface } from 'drop-agent-ui';
 
 function App() {
   return (
@@ -56,7 +56,7 @@ function App() {
 
 ## Package Structure
 
-### @reasoning-agent/core
+### drop-agent
 
 **Main exports:**
 - `ReasoningAgent` - Core agent class
@@ -65,7 +65,7 @@ function App() {
 - `setupSSERoutes()` - Express SSE endpoints
 - `createSSEServer()` - Standalone server
 
-### @reasoning-agent/ui
+### drop-agent-ui
 
 **Main exports:**
 - `ChatInterface` - Complete chat UI
@@ -95,7 +95,7 @@ agent.addTool(
 ### Tool Registry
 
 ```javascript
-import { ToolRegistry } from '@reasoning-agent/core';
+import { ToolRegistry } from 'drop-agent';
 
 const tools = new ToolRegistry();
 
@@ -123,7 +123,7 @@ const agent = new ReasoningAgent({
 ### UI Customization
 
 ```jsx
-import { ThinkingBlock, ResponseBlock, ChatInput } from '@reasoning-agent/ui';
+import { ThinkingBlock, ResponseBlock, ChatInput } from 'drop-agent-ui';
 
 function CustomChat() {
   return (
@@ -219,7 +219,7 @@ All components accept standard React props plus:
 TypeScript definitions are included. For better type safety:
 
 ```typescript
-import { ReasoningAgent, ToolHandler } from '@reasoning-agent/core';
+import { ReasoningAgent, ToolHandler } from 'drop-agent';
 
 const handler: ToolHandler = async ({ query }) => {
   return `Result for ${query}`;

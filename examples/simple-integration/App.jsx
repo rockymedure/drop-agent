@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChatInterface } from '@reasoning-agent/ui';
+import { ChatInterface } from 'drop-agent-ui';
 
 function App() {
   return (
