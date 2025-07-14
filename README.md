@@ -1,212 +1,177 @@
-# Reasoning Agent - Browser Chat Interface
+# Drop Agent - AI Reasoning Agent with Extended Thinking
 
-A modern browser-based chat interface for an AI reasoning agent with extended thinking capabilities, inspired by Claude Desktop.
+A production-ready AI reasoning agent with real-time extended thinking visualization, tool calling, and streaming responses. Built with Anthropic's Claude Opus 4.
 
-> **🚀 Want to use this agent in your own project?** See the [Integration Guide](README-integration.md) for drop-in instructions!
+## 🚀 **Quick Start (Recommended)**
 
-## Features
+**Clone and run locally in under 2 minutes:**
 
-- **🧠 Extended Thinking**: Real-time visibility into AI reasoning process
-- **🔧 Tool Integration**: Calculator, weather, and extensible tool system
-- **⚡ Real-time Streaming**: Server-Sent Events (SSE) streaming for instant responses
-- **🎨 Modern UI**: Clean, responsive design inspired by Claude Desktop
-- **⚙️ Configurable**: Adjustable model settings, token limits, and thinking budget
-- **💬 Chat History**: Persistent conversation history with timestamps
-- **📱 Responsive**: Works on desktop and mobile devices
+```bash
+# 1. Clone the repository
+git clone https://github.com/rockymedure/drop-agent.git
+cd drop-agent
 
-## Architecture
+# 2. Install all dependencies
+npm run install-all
+
+# 3. Set up your API key
+echo "ANTHROPIC_API_KEY=your-api-key-here" > server/.env
+
+# 4. Start the application
+npm run dev
+```
+
+**Open http://localhost:3000** - You'll have a fully working AI reasoning agent!
+
+## ✨ **What You Get**
+
+- **🧠 Extended Thinking** - Watch the AI reason through problems in real-time
+- **🔧 Tool Calling** - Built-in calculator, weather, and extensible tool system  
+- **⚡ Real-time Streaming** - Server-Sent Events for instant responses
+- **🎨 Modern Interface** - Professional chat UI inspired by Claude Desktop
+- **📱 Responsive Design** - Works perfectly on desktop and mobile
+- **⚙️ Configurable** - Adjust model, tokens, thinking budget, and more
+
+## 🎯 **Perfect For**
+
+- **Developers** wanting to explore AI reasoning capabilities
+- **Researchers** studying extended thinking and tool usage
+- **Anyone** who wants to see how AI actually thinks through problems
+- **Projects** needing a drop-in AI reasoning component
+
+## 🏗️ **Architecture**
 
 ```
 ┌─────────────────┐     Server-Sent     ┌─────────────────┐
 │   React Client  │     Events (SSE)    │  Express Server │
 │   Port 3000     │ ◄─────────────────► │   Port 3001     │
 │                 │                     │                 │
-│ • Chat UI       │                     │ • Agent Logic   │
+│ • Chat UI       │                     │ • Drop Agent    │
 │ • SSE Consumer  │                     │ • Tools         │
 │ • State Mgmt    │                     │ • API Bridge    │
 └─────────────────┘                     └─────────────────┘
 ```
 
-## Quick Start
+## 📋 **Available Commands**
 
-1. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+```bash
+npm run dev         # Start both client and server
+npm run server      # Start only the server (port 3001)
+npm run client      # Start only the client (port 3000)
+npm run build       # Build for production
+npm run install-all # Install all dependencies
+```
 
-2. **Set up environment:**
-   ```bash
-   # Create server/.env with your Anthropic API key
-   echo "ANTHROPIC_API_KEY=your-api-key-here" > server/.env
-   ```
+## 🔧 **Built-in Tools**
 
-3. **Start development servers:**
-   ```bash
-   npm run dev
-   ```
+- **Calculator** - Mathematical operations (`"What's 25 × 17?"`)
+- **Weather** - Weather information (`"What's the weather in Tokyo?"`)
+- **Time** - Current date/time (`"What time is it?"`)
+- **Extensible** - Easy to add more tools
 
-4. **Open your browser:**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:3001
+## 🎨 **Key Features**
 
-## Available Scripts
+### **Extended Thinking Visualization**
+See exactly how the AI reasons through complex problems:
+- Real-time thinking process display
+- Separated thinking and response blocks
+- Configurable thinking budget (1K-50K tokens)
 
-- `npm run dev` - Start both client and server in development mode
-- `npm run server` - Start only the server
-- `npm run client` - Start only the client
-- `npm run cli` - Use the original CLI interface
-- `npm run build` - Build the client for production
+### **Professional Chat Interface**
+- Clean, modern design inspired by Claude Desktop
+- Persistent conversation history
+- Real-time typing indicators
+- Tool usage highlighting
+- Mobile-responsive layout
 
-## Usage
+### **Advanced Configuration**
+- **Models**: Claude Opus 4, Claude Sonnet 4
+- **Max Tokens**: 1,000 - 200,000
+- **Thinking Budget**: 1,000 - 50,000 tokens
+- **Streaming Options**: Real-time or batch responses
 
-### Chat Interface
+## 🛠️ **Development**
 
-1. **Send Messages**: Type in the input area and press Enter
-2. **View Thinking**: Click the "Thinking" section to expand/collapse reasoning
-3. **Tool Usage**: See real-time tool calls and results
-4. **Settings**: Click the gear icon to configure model and parameters
+### **Adding Custom Tools**
 
-### Configuration Options
-
-- **Model**: Choose between Claude Opus 4 and Sonnet 4
-- **Max Tokens**: Set the maximum response length (1,000 - 200,000)
-- **Thinking Budget**: Control reasoning depth (1,000 - 50,000 tokens)
-- **Show Thinking**: Toggle visibility of reasoning process
-
-### Available Tools
-
-- **Calculator**: Perform mathematical calculations
-- **Weather**: Get weather information (simulated)
-- **Extensible**: Easy to add more tools via the server API
-
-## Development
-
-### Adding New Tools
-
-Add tools to the server in `server/sse-server.js`:
+Add tools in `server/sse-server.js`:
 
 ```javascript
 agent.addTool(
-  'tool_name',
-  'Description of what the tool does',
+  'search_docs',
+  'Search internal documentation',
   {
-    param1: { type: 'string', description: 'Parameter description' }
+    query: { type: 'string', description: 'Search query' }
   },
-  async ({ param1 }) => {
-    // Tool implementation
-    return 'Tool result';
+  async ({ query }) => {
+    // Your implementation
+    return `Found results for: ${query}`;
   }
 );
 ```
 
-### UI Customization
+### **Customizing the UI**
 
-The interface uses Tailwind CSS with custom Claude Desktop-inspired styling:
+Components are in `client/src/components/`:
+- `ChatInterface.jsx` - Main chat component
+- `ThinkingBlock.jsx` - Thinking visualization  
+- `ResponseBlock.jsx` - Response display
+- `ToolResults.jsx` - Tool usage display
 
-- **Colors**: Defined in `client/tailwind.config.js`
-- **Components**: Modular React components in `client/src/components/`
-- **Animations**: Custom typing indicators and loading states
+## 🌐 **For LLMs and AI Assistants**
 
-## Technical Details
+If you're an AI helping someone set up Drop Agent:
 
-### Server-Sent Events (SSE)
+1. **Verify Node.js**: Make sure they have Node.js 18+ installed
+2. **Get API Key**: They need an Anthropic API key from console.anthropic.com
+3. **Clone & Install**: Use the Quick Start commands above
+4. **Test Messages**: Suggest trying:
+   - `"What's 142 × 67?"`
+   - `"What's the weather in London?"`
+   - `"Help me think through buying a house"`
 
-The real-time communication uses these SSE event types:
+The setup is designed to work out-of-the-box with minimal configuration.
 
-- `start` - Processing begins
-- `chunk` - Contains streaming data with type and content
-  - `content_block_start` - New content block begins
-  - `thinking_delta` - Incremental thinking content
-  - `text_delta` - Incremental response text
-  - `tool_result` - Tool execution result
-  - `content_block_stop` - Content block ends
-- `end` - Message processing complete
-- `error` - Error occurred during processing
+## 🔐 **Security**
 
-### Extended Thinking Integration
-
-The system fully implements Anthropic's extended thinking specification:
-
-- **Streaming**: Real-time thinking and response streaming
-- **Token Management**: Configurable thinking budget
-- **Event Handling**: Proper content block lifecycle
-- **Error Handling**: Graceful degradation and reconnection
-
-## Security Notes
-
-- API keys are stored server-side only
-- Client-server communication over Server-Sent Events
-- No sensitive data stored in browser
+- API keys stored server-side only
+- No sensitive data in browser storage  
 - CORS configured for development
+- Client-server communication via SSE
 
-## Browser Support
+## 📦 **Alternative: npm Packages**
 
-- Chrome 90+
-- Firefox 90+
-- Safari 14+
-- Edge 90+
+For integration into existing projects, we also publish npm packages:
 
-## Troubleshooting
-
-### Connection Issues
-- Check if server is running on port 3001
-- Verify API key is set in `server/.env`
-- Check browser console for SSE connection errors
-- Ensure ports 3000 and 3001 are available
-
-### Performance
-- Reduce thinking budget for faster responses
-- Lower max tokens for shorter responses
-- Use Claude Sonnet 4 for faster processing
-
-## CLI Mode
-
-The original terminal interface is still available:
-
-```bash
-npm run cli
-```
-
-This provides the same functionality in a command-line format for development and testing.
-
-## Using This Agent in Your Project
-
-This reasoning agent is now modular and ready for integration into any project:
-
-### **📦 Available Packages**
-- **`drop-agent`** - Core agent functionality
-- **`drop-agent-ui`** - React chat components
-- **`examples/`** - Integration examples
-
-### **🚀 Quick Integration**
 ```bash
 npm install drop-agent drop-agent-ui
 ```
 
-```javascript
-// 3-line server setup
-import { ReasoningAgent, addCommonTools, setupSSERoutes } from 'drop-agent';
-const agent = new ReasoningAgent({ apiKey: process.env.ANTHROPIC_API_KEY });
-addCommonTools(agent);
-setupSSERoutes(app, agent);
-```
+But **cloning the repo is recommended** for the best experience.
 
-```jsx
-// 2-line React integration  
-import { ChatInterface } from 'drop-agent-ui';
-<ChatInterface serverUrl="http://localhost:3001" />
-```
+## 🐛 **Troubleshooting**
 
-**→ Full instructions: [Integration Guide](README-integration.md)**
+**Connection Issues:**
+- Ensure ports 3000 and 3001 are available
+- Check if API key is set in `server/.env`
+- Verify both client and server are running
 
-## Contributing
+**Performance:**
+- Reduce thinking budget for faster responses
+- Use Claude Sonnet 4 for speed over Claude Opus 4 for quality
+- Lower max tokens for shorter responses
+
+## 🤝 **Contributing**
 
 1. Fork the repository
 2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+3. Test your changes thoroughly
+4. Submit a pull request
 
-## License
+## 📄 **License**
 
-MIT License - see LICENSE file for details
+MIT License - Use in any project, commercial or personal.
+
+---
+
+**Drop Agent brings AI reasoning to life. Clone it today and watch AI think! 🧠✨**

@@ -1,13 +1,13 @@
 {
   "name": "drop-agent-ui",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "React components for reasoning agent chat interfaces",
   "type": "module",
   "main": "index.js",
   "exports": {
     ".": "./index.js",
     "./hooks": "./src/hooks/index.js",
-    "./components": "./src/components/index.js",
+    "./components": "./src/components/index.jsx",
     "./styles": "./src/styles/index.css"
   },
   "keywords": [

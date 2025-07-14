@@ -1,6 +1,6 @@
 {
   "name": "drop-agent-basics",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "CLI tool to create Drop Agent projects with zero setup",
   "type": "module",
   "bin": {
