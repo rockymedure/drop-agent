@@ -285,6 +285,55 @@ The repository includes complete examples:
 - **Memory Examples** - Conversation context demos
 - **Web Search Integration** - Real-time search examples
 
+## Technical Implementation
+
+### Extended Thinking with Tool Use Pattern
+
+Drop Agent implements the proper **two-phase conversation flow** required by Anthropic's extended thinking with tool use:
+
+#### Phase 1: Initial Response
+```javascript
+// Claude responds with thinking + tool_use blocks
+const stream = client.messages.stream({
+  model: "claude-sonnet-4-20250514",
+  thinking: { type: "enabled", budget_tokens: 10000 },
+  messages: [{ role: "user", content: "What's 2x2?" }],
+  tools: [calculatorTool]
+});
+
+// Capture complete assistant message including thinking signatures
+let assistantContent = [];
+for await (const event of stream) {
+  // Build thinking blocks with proper signatures
+  // Build tool_use blocks with parsed inputs
+}
+```
+
+#### Phase 2: Tool Result Continuation
+```javascript
+// After tool execution, continue conversation with proper message structure
+const continuationMessages = [
+  { role: "user", content: "What's 2x2?" },
+  { role: "assistant", content: assistantContent }, // thinking + tool_use
+  { role: "user", content: toolResults }            // tool results
+];
+
+// New API call to get Claude's response to tool results
+const continuation = client.messages.stream({
+  messages: continuationMessages,
+  thinking: { type: "enabled", budget_tokens: 10000 }
+});
+```
+
+#### Key Implementation Details:
+
+1. **Signature Capture**: Thinking blocks require cryptographic signatures from `signature_delta` events
+2. **Message Structure**: Assistant messages must include complete thinking blocks with signatures
+3. **Tool Result Format**: Must use `tool_result` type with `tool_use_id` matching the original tool call
+4. **Conversation Flow**: Cannot continue in same stream - requires separate API call after tool execution
+
+This pattern ensures proper conversation continuity and prevents the "empty assistant message" bug that causes 400 API errors.
+
 ## Recent Updates
 
 ### v1.0.1+ (2025)
@@ -294,6 +343,7 @@ The repository includes complete examples:
 - ✅ **Claude Sonnet 4** - Upgraded default model
 - ✅ **Enhanced UI** - Streaming indicators and visual improvements
 - ✅ **Better Error Handling** - Overload detection and user-friendly messages
+- ✅ **Proper Tool Use Implementation** - Two-phase conversation flow with extended thinking
 
 ## Support
 

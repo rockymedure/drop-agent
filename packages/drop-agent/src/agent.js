@@ -93,6 +93,7 @@ Remember: You're not just answering questions - you're helping users think bette
       tools.push(this.webSearchConfig);
     }
 
+    // PHASE 1: Initial request to get thinking + tool_use blocks
     let stream = this.client.messages.stream({
       model: options.model || "claude-sonnet-4-20250514",
       max_tokens: options.maxTokens || 16000,
@@ -109,6 +110,11 @@ Remember: You're not just answering questions - you're helping users think bette
     let currentToolCall = null;
     let thinkingStarted = false;
     let responseStarted = false;
+    
+    // Capture the complete assistant message content as Claude generates it
+    let assistantContent = [];
+    let currentThinkingBlock = null;
+    let currentTextBlock = null;
 
     for await (const event of stream) {
       if (event.type === 'content_block_start') {
@@ -120,7 +126,18 @@ Remember: You're not just answering questions - you're helping users think bette
         thinkingStarted = false;
         responseStarted = false;
         
-        if (event.content_block.type === 'tool_use') {
+        if (event.content_block.type === 'thinking') {
+          currentThinkingBlock = {
+            type: 'thinking',
+            thinking: '',
+            signature: ''
+          };
+        } else if (event.content_block.type === 'text') {
+          currentTextBlock = {
+            type: 'text',
+            text: ''
+          };
+        } else if (event.content_block.type === 'tool_use') {
           currentToolCall = {
             id: event.content_block.id,
             name: event.content_block.name,
@@ -159,6 +176,10 @@ Remember: You're not just answering questions - you're helping users think bette
             type: 'thinking_delta',
             content: event.delta.thinking
           };
+          // Capture thinking content
+          if (currentThinkingBlock) {
+            currentThinkingBlock.thinking += event.delta.thinking;
+          }
         } else if (event.delta.type === 'text_delta') {
           if (!responseStarted) {
             yield {
@@ -170,13 +191,28 @@ Remember: You're not just answering questions - you're helping users think bette
             type: 'text_delta',
             content: event.delta.text
           };
+          // Capture text content
+          if (currentTextBlock) {
+            currentTextBlock.text += event.delta.text;
+          }
         } else if (event.delta.type === 'input_json_delta') {
           if (currentToolCall) {
             currentToolCall.input += event.delta.partial_json;
           }
+        } else if (event.delta.type === 'signature_delta') {
+          // Capture signature for thinking blocks
+          if (currentThinkingBlock) {
+            currentThinkingBlock.signature += event.delta.signature;
+          }
         }
       } else if (event.type === 'content_block_stop') {
-        if (currentToolCall) {
+        if (currentThinkingBlock) {
+          assistantContent.push(currentThinkingBlock);
+          currentThinkingBlock = null;
+        } else if (currentTextBlock) {
+          assistantContent.push(currentTextBlock);
+          currentTextBlock = null;
+        } else if (currentToolCall) {
           try {
             currentToolCall.input = JSON.parse(currentToolCall.input);
             
@@ -188,6 +224,13 @@ Remember: You're not just answering questions - you're helping users think bette
               };
             } else {
               toolCalls.push(currentToolCall);
+              // Add tool use to assistant content
+              assistantContent.push({
+                type: 'tool_use',
+                id: currentToolCall.id,
+                name: currentToolCall.name,
+                input: currentToolCall.input
+              });
             }
           } catch (e) {
             console.error('Failed to parse tool input:', e);
@@ -200,12 +243,20 @@ Remember: You're not just answering questions - you're helping users think bette
       }
     }
 
+    // PHASE 2: If we have tool calls, execute them and continue conversation
     if (toolCalls.length > 0) {
+      // Execute tools and collect results
+      const toolResults = [];
       for (const toolCall of toolCalls) {
         const tool = this.tools.get(toolCall.name);
         if (tool) {
           try {
             const result = await tool.handler(toolCall.input);
+            toolResults.push({
+              type: 'tool_result',
+              tool_use_id: toolCall.id,
+              content: result
+            });
             yield {
               type: 'tool_result',
               tool: toolCall.name,
@@ -213,12 +264,64 @@ Remember: You're not just answering questions - you're helping users think bette
               result
             };
           } catch (error) {
+            toolResults.push({
+              type: 'tool_result',
+              tool_use_id: toolCall.id,
+              content: error.message,
+              is_error: true
+            });
             yield {
               type: 'tool_error',
               tool: toolCall.name,
               error: error.message
             };
           }
+        }
+      }
+
+      // PHASE 3: Continue conversation with tool results
+      const updatedMessages = [
+        ...messages,
+        { role: 'assistant', content: assistantContent },
+        { role: 'user', content: toolResults }
+      ];
+
+      // Start a new stream with the tool results
+      const continuationStream = this.client.messages.stream({
+        model: options.model || "claude-sonnet-4-20250514",
+        max_tokens: options.maxTokens || 16000,
+        messages: updatedMessages,
+        system: this.systemPrompt,
+        tools: tools.length > 0 ? tools : undefined,
+        thinking: {
+          type: "enabled",
+          budget_tokens: options.thinkingBudget || 10000
+        }
+      });
+
+      // Stream the continuation response
+      for await (const event of continuationStream) {
+        if (event.type === 'content_block_start') {
+          yield {
+            type: 'content_block_start',
+            blockType: event.content_block.type
+          };
+        } else if (event.type === 'content_block_delta') {
+          if (event.delta.type === 'thinking_delta') {
+            yield {
+              type: 'thinking_delta',
+              content: event.delta.thinking
+            };
+          } else if (event.delta.type === 'text_delta') {
+            yield {
+              type: 'text_delta',
+              content: event.delta.text
+            };
+          }
+        } else if (event.type === 'content_block_stop') {
+          yield {
+            type: 'content_block_stop'
+          };
         }
       }
     }

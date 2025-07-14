@@ -99,6 +99,16 @@ const ChatInterface = () => {
         role: msg.role,
         content: msg.content
       }));
+
+      // DEBUG LOGGING
+      console.log('Conversation history being sent to API:', conversationHistory);
+      conversationHistory.forEach((msg, index) => {
+        console.log(`Message ${index}:`, {
+          role: msg.role,
+          content: msg.content,
+          isEmpty: !msg.content || msg.content.trim() === ''
+        });
+      });
       
       try {
         await sendMessage(conversationHistory, {
@@ -109,7 +119,10 @@ const ChatInterface = () => {
           if (data.message === 'Complete') {
             setCurrentMessage(prev => {
               if (prev) {
-                setMessages(prevMessages => [...prevMessages, prev]);
+                // Only add messages that have actual content
+                if (prev.content && prev.content.trim() !== '') {
+                  setMessages(prevMessages => [...prevMessages, prev]);
+                }
               }
               return null;
             });
