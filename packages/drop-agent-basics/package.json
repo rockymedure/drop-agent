@@ -1,0 +1,39 @@
+{
+  "name": "drop-agent-basics",
+  "version": "1.0.0",
+  "description": "CLI tool to create Drop Agent projects with zero setup",
+  "type": "module",
+  "bin": {
+    "create-drop-agent": "./bin/create-drop-agent.js",
+    "drop-agent-create": "./bin/create-drop-agent.js"
+  },
+  "main": "./bin/create-drop-agent.js",
+  "keywords": [
+    "ai",
+    "reasoning-agent",
+    "drop-agent",
+    "cli",
+    "create-app",
+    "anthropic",
+    "claude",
+    "extended-thinking"
+  ],
+  "author": "rockymedure",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rockymedure/drop-agent.git",
+    "directory": "packages/drop-agent-basics"
+  },
+  "homepage": "https://github.com/rockymedure/drop-agent#readme",
+  "bugs": {
+    "url": "https://github.com/rockymedure/drop-agent/issues"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}
