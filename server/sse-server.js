@@ -1,6 +1,10 @@
 import express from 'express';
 import cors from 'cors';
+import dotenv from 'dotenv';
 import ReasoningAgent from './agent.js';
+
+// Load environment variables
+dotenv.config();
 
 const app = express();
 const PORT = 3001;

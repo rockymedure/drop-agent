@@ -1,0 +1,18 @@
+{
+  "name": "reasoning-agent-simple-example",
+  "version": "1.0.0",
+  "description": "Simple integration example for reasoning agent",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@reasoning-agent/core": "file:../../packages/reasoning-agent",
+    "@reasoning-agent/ui": "file:../../packages/reasoning-agent-ui",
+    "express": "^4.18.2",
+    "dotenv": "^16.4.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "name": "@reasoning-agent/core",
+  "version": "1.0.0",
+  "description": "Modular AI reasoning agent with extended thinking capabilities using Anthropic's Claude",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./agent": "./src/agent.js",
+    "./tools": "./src/tools/index.js",
+    "./sse": "./src/sse.js"
+  },
+  "keywords": [
+    "ai",
+    "reasoning",
+    "agent",
+    "anthropic",
+    "claude",
+    "extended-thinking",
+    "tools",
+    "modular"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.29.0",
+    "dotenv": "^16.4.5"
+  },
+  "peerDependencies": {
+    "express": ">=4.18.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}

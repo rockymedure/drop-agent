@@ -1,0 +1,36 @@
+{
+  "name": "@reasoning-agent/ui",
+  "version": "1.0.0",
+  "description": "React components for reasoning agent chat interfaces",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./hooks": "./src/hooks/index.js",
+    "./components": "./src/components/index.js",
+    "./styles": "./src/styles/index.css"
+  },
+  "keywords": [
+    "react",
+    "components",
+    "chat",
+    "ai",
+    "reasoning-agent",
+    "ui",
+    "sse"
+  ],
+  "author": "",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "devDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}
