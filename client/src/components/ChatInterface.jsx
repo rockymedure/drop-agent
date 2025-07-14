@@ -3,14 +3,26 @@ import { useSSE } from '../hooks/useSSE';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { WebSearchResults } from './WebSearchResults';
 import { WebSearchProgress } from './WebSearchProgress';
+import { WebSearchDrawer } from './WebSearchDrawer';
 
 const ChatInterface = () => {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentMessage, setCurrentMessage] = useState(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [drawerData, setDrawerData] = useState({ results: [], queries: [] });
   
   const { sendMessage } = useSSE();
+
+  const openDrawer = (results, queries) => {
+    setDrawerData({ results, queries });
+    setIsDrawerOpen(true);
+  };
+
+  const closeDrawer = () => {
+    setIsDrawerOpen(false);
+  };
 
   const handleSend = async () => {
     if (inputValue.trim() && !isProcessing) {
@@ -174,7 +186,11 @@ const ChatInterface = () => {
                   <WebSearchProgress queries={message.webSearchQueries} />
                 )}
                 {message.webSearchResults && message.webSearchResults.length > 0 && (
-                  <WebSearchResults webSearchResults={message.webSearchResults} />
+                  <WebSearchResults 
+                    webSearchResults={message.webSearchResults}
+                    queries={message.webSearchQueries || []}
+                    onOpenDrawer={() => openDrawer(message.webSearchResults, message.webSearchQueries || [])}
+                  />
                 )}
                 
                 {/* Main response section */}
@@ -236,7 +252,11 @@ const ChatInterface = () => {
               />
             )}
             {currentMessage.webSearchResults && currentMessage.webSearchResults.length > 0 && (
-              <WebSearchResults webSearchResults={currentMessage.webSearchResults} />
+              <WebSearchResults 
+                webSearchResults={currentMessage.webSearchResults}
+                queries={currentMessage.webSearchQueries || []}
+                onOpenDrawer={() => openDrawer(currentMessage.webSearchResults, currentMessage.webSearchQueries || [])}
+              />
             )}
             
             {/* Main response section */}
@@ -279,6 +299,14 @@ const ChatInterface = () => {
           </button>
         </div>
       </div>
+
+      {/* Web Search Drawer */}
+      <WebSearchDrawer 
+        isOpen={isDrawerOpen}
+        onClose={closeDrawer}
+        webSearchResults={drawerData.results}
+        queries={drawerData.queries}
+      />
     </div>
   );
 };
