@@ -52,6 +52,15 @@ agent.addWebSearch({
   // userLocation: { type: 'approximate', city: 'San Francisco', region: 'California', country: 'US' }
 });
 
+// Add MCP fetch server for web browsing
+// To use this, you need to run the MCP fetch server locally or deploy it
+// GitHub: https://github.com/modelcontextprotocol/servers/tree/main/src/fetch
+// agent.addMCP('fetch', 'http://localhost:8080');
+
+// Example of how to add multiple MCP servers:
+// agent.addMCP('filesystem', 'https://your-mcp-server.com/files');
+// agent.addMCP('database', 'https://your-mcp-server.com/db');
+
 // SSE endpoint for streaming chat
 app.post('/api/chat/stream', async (req, res) => {
   const { message, options = {} } = req.body;
@@ -89,7 +98,12 @@ app.post('/api/chat/stream', async (req, res) => {
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    tools: agent.listTools(),
+    mcpServers: agent.listMCPServers()
+  });
 });
 
 app.listen(PORT, () => {

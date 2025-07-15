@@ -32,7 +32,7 @@
     "url": "https://github.com/rockymedure/drop-agent/issues"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.29.0",
+    "@anthropic-ai/sdk": "^0.56.0",
     "dotenv": "^16.4.5"
   },
   "peerDependencies": {

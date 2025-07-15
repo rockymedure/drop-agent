@@ -1,8 +1,13 @@
 import express from 'express';
 import { WebSocketServer } from 'ws';
 import cors from 'cors';
-import ReasoningAgent from './agent.js';
+import dotenv from 'dotenv';
+import ReasoningAgent from '../packages/drop-agent/src/agent.js';
+import { setupSSERoutes } from '../packages/drop-agent/src/sse.js';
 import { createServer } from 'http';
+
+// Load environment variables
+dotenv.config({ path: './server/.env' });
 
 const app = express();
 const server = createServer(app);
@@ -13,7 +18,9 @@ app.use(cors());
 app.use(express.json());
 
 // Initialize the agent
-const agent = new ReasoningAgent();
+const agent = new ReasoningAgent({
+  apiKey: process.env.ANTHROPIC_API_KEY
+});
 
 // Add default tools
 agent.addTool(
@@ -42,6 +49,15 @@ agent.addTool(
     return `Weather in ${location}: Sunny, 72°F (simulated response)`;
   }
 );
+
+// Add web search
+agent.addWebSearch({
+  maxUses: 3,
+  allowedDomains: ['wikipedia.org', 'github.com', 'stackoverflow.com'],
+});
+
+// Setup SSE routes for the web interface
+setupSSERoutes(app, agent);
 
 // WebSocket connection handler
 wss.on('connection', (ws) => {
@@ -122,5 +138,7 @@ const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
   console.log(`🚀 Reasoning Agent Server running on port ${PORT}`);
   console.log(`🔗 WebSocket available at ws://localhost:${PORT}`);
-  console.log(`📡 REST API available at http://localhost:${PORT}/api`);
+  console.log(`📡 SSE Streaming API available at http://localhost:${PORT}/api/chat/stream`);
+  console.log(`🏥 Health check available at http://localhost:${PORT}/api/health`);
+  console.log(`🛠️ Available tools: ${agent.listTools().join(', ')}`);
 });

@@ -103,6 +103,16 @@ agent.addWebSearch({
 });
 ```
 
+### MCP Server Integration
+```javascript
+// Add MCP servers for enhanced capabilities
+agent.addMCP('fetch', 'http://localhost:8080');        // Web fetching
+agent.addMCP('filesystem', 'https://api.company.com/files'); // File access
+agent.addMCP('database', 'https://api.company.com/db');      // Database queries
+
+// That's it! Drop Agent handles all the MCP protocol details
+```
+
 ### Custom Tools
 ```javascript
 agent.addTool(
@@ -212,8 +222,11 @@ npm install drop-agent drop-agent-ui
 ### ReasoningAgent Methods
 - `addTool(name, description, parameters, handler)` - Add a custom tool
 - `addWebSearch(config)` - Enable web search with configuration
+- `addMCP(name, baseUrl, auth)` - Add MCP server connection
 - `removeTool(name)` - Remove a tool
+- `removeMCP(name)` - Remove MCP server
 - `listTools()` - Get tool names
+- `listMCPServers()` - Get MCP server names
 - `streamResponse(messages, options)` - Stream agent response with conversation history
 - `processMessage(messages, options)` - Get complete response with conversation history
 
@@ -344,6 +357,7 @@ This pattern ensures proper conversation continuity and prevents the "empty assi
 - ✅ **Enhanced UI** - Streaming indicators and visual improvements
 - ✅ **Better Error Handling** - Overload detection and user-friendly messages
 - ✅ **Proper Tool Use Implementation** - Two-phase conversation flow with extended thinking
+- ✅ **MCP Server Support** - Connect to external MCP servers with one line of code
 
 ## Support
 
